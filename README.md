@@ -38,6 +38,9 @@ make docs
 
 # Clean build artifacts and cache
 make clean
+
+# Build the docker image
+make docker-build
 ```
 
 ## Development Tools
@@ -52,18 +55,19 @@ The following tools are configured:
 
 ## Makefile Targets
 
-| Target       | Description                         |
-| ------------ | ----------------------------------- |
-| `install`    | Install dependencies                |
-| `build`      | Build the project                   |
-| `run`        | Run the CLI app with arguments      |
-| `docs`       | Generate PDFs from Markdown         |
-| `format`     | Run Black formatter                 |
-| `lint`       | Run Flake8 linting                  |
-| `type-check` | Run Mypy type-checking              |
-| `test`       | Run tests using Pytest              |
-| `check`      | Run all checks (format, lint, test) |
-| `clean`      | Clean build and cache files         |
+| Target         | Description                         |
+| -------------- | ----------------------------------- |
+| `install`      | Install dependencies                |
+| `build`        | Build the project                   |
+| `run`          | Run the CLI app with arguments      |
+| `docs`         | Generate PDFs from Markdown         |
+| `format`       | Run Black formatter                 |
+| `lint`         | Run Flake8 linting                  |
+| `type-check`   | Run Mypy type-checking              |
+| `test`         | Run tests using Pytest              |
+| `check`        | Run all checks (format, lint, test) |
+| `docker-build` | Build the Docker image              |
+| `clean`        | Clean build and cache files         |
 
 ## Project Structure
 
@@ -74,6 +78,7 @@ pac/
 ├── tests/                   # Test files
 ├── docs/                    # Documentation files (Markdown)
 ├── dist/                    # Build and compiled files
+├── Dockerfile               # Docker configuration
 ├── Makefile                 # Makefile with automation tasks
 ├── pyproject.toml           # Project configuration
 ├── mypy.ini                 # Mypy configuration
@@ -87,7 +92,7 @@ pac/
 2. Create your feature branch (`git checkout -b feature/YourFeature`).
 3. Commit your changes (`git commit -m 'feat(scope): some feature'`).
 4. Push to the branch (`git push origin feature/YourFeature`).
-5. Open a pull request.
+5. Open a pull request to the `develop` branch.
 
 > **Note:** This project uses Commitlint. Please follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification.
 

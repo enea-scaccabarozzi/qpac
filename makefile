@@ -6,6 +6,9 @@
 MARKDOWN_DIR := docs
 DOCS_DIR := dist/docs
 
+# Docker-related variables
+DOCKER_IMAGE := pac-app:latest
+
 # File Lists
 MARKDOWN_FILES := $(shell find $(MARKDOWN_DIR) -type f -name '*.md')
 PDF_FILES := $(patsubst $(MARKDOWN_DIR)/%.md,$(DOCS_DIR)/%.pdf,$(MARKDOWN_FILES))
@@ -26,7 +29,7 @@ COLOR_CHECK := \033[35m
 # Main Targets
 # ================================
 
-all: check docs
+all: check docs build docker-build
 
 install:
 	@echo "$(COLOR_INFO)Installing dependencies...$(COLOR_RESET)"
@@ -73,12 +76,23 @@ test:
 
 check: format lint type-check test
 
+
+# ================================
+# Docker Image
+# ================================
+
+# Docker Build
+docker-build:
+	@echo "$(COLOR_INFO)Building Docker image: $(DOCKER_IMAGE)...$(COLOR_RESET)"
+	@docker build -t $(DOCKER_IMAGE) .
+
 # ================================
 # Cleaning Artifacts
 # ================================
 
 clean:
-	@echo "$(COLOR_ERROR)Cleaning build artifacts, cache files, and coverage reports...$(COLOR_RESET)"
+	@echo "$(COLOR_ERROR)Cleaning build artifacts, cache files, coverage reports and docker images...$(COLOR_RESET)"
 	@rm -rf $(DOCS_DIR) dist build .mypy_cache .pytest_cache coverage
 	@find . -type d -name "__pycache__" -exec rm -rf {} +
 	@find . -type f -name "*.pyc" -delete
+	@docker rmi -f $(DOCKER_IMAGE) || true
