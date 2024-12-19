@@ -1,0 +1,57 @@
+[tool.poetry]
+name = "pac"
+version = "0.1.0"
+description = "A CLI app built with Poetry"
+authors = ["enea-scaccabarozzi <me@eneascaccabarozzi.xyz>"]
+readme = "README.md"
+packages = [{ include = "pac", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+click = "^8.1.7"
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.13.0"
+flake8 = "^7.1.1"
+black = "^24.10.0"
+pre-commit = "^4.0.1"
+pytest = "^8.3.4"
+pytest-cov = "^6.0.0"
+pytest-mock = "^3.14.0"
+pytest-timeout = "^2.3.1"
+pytest-sugar = "^1.0.0"
+pytest-profiling = "^1.8.1"
+reportlab = "^4.2.5"
+weasyprint = "^63.1"
+lxml = "^5.3.0"
+
+[tool.poetry.scripts]
+run = "pac.cli:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 110
+target-version = ["py311"]
+exclude = '''
+/(
+    \.venv
+  | build
+  | dist
+  | __pycache__
+  | tests
+)/
+'''
+
+[tool.pytest.ini_options]
+addopts = """
+    --cov=src
+    --cov-report=term-missing
+    --cov-report=html:coverage/htmlcov
+    --cov-report=xml:coverage/coverage.xml
+    --profile
+    --profile-svg
+"""
+timeout = 10
