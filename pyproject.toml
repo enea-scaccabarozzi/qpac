@@ -24,6 +24,7 @@ pytest-profiling = "^1.8.1"
 reportlab = "^4.2.5"
 weasyprint = "^63.1"
 lxml = "^5.3.0"
+python-semantic-release = "^9.15.2"
 
 [tool.poetry.scripts]
 run = "pac.cli:main"
@@ -53,5 +54,14 @@ addopts = """
     --cov-report=xml:coverage/coverage.xml
     --profile
     --profile-svg
+    --junitxml=coverage/junit.xml
+    -o junit_family=legacy
 """
 timeout = 10
+
+[tool.semantic_release]
+version_variable = ["src/pac/__init__.py:__version__"]
+version_toml = ["pyproject.toml:tool.poetry.version"]
+major_on_zero = false
+branch = "main"
+build_command = "pip install poetry && poetry install && poetry build"

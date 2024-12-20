@@ -1,0 +1,105 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    concurrency: release
+
+    permissions:
+      id-token: write
+      contents: write
+
+    steps:
+      # Checkout the repository at the workflow sha in case the branch was updated
+      - name: Setup | Checkout Repository at workflow sha
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+
+      - name: Setup | Force correct release branch on workflow sha
+        run: |
+          git checkout -B ${{ github.ref_name }} ${{ github.sha }}
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v2
+
+      - name: Cache Poetry virtual environment
+        uses: actions/cache@v3
+        with:
+          path: ./.venv
+          key: venv-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            venv-
+
+      - name: Install Graphviz (dot)
+        run: sudo apt-get install -y graphviz
+
+      - name: Run make install
+        run: make install
+
+      - name: Run make format
+        run: make format
+
+      - name: Run make lint
+        run: make lint
+
+      - name: Run make type-check
+        run: make type-check
+
+      - name: Run make test
+        run: make test
+
+      - name: Action | Semantic Version Release
+        id: release
+        uses: python-semantic-release/python-semantic-release@v9.12.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          git_committer_name: "github-actions"
+          git_committer_email: "actions@users.noreply.github.com"
+
+      # Parse version from pyproject.toml using shell
+      - name: Get version from pyproject.toml
+        id: version
+        run: |
+          VERSION=$(grep '^version ' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Build Docker image
+        run: make docker-build
+
+      - name: Tag Docker image with version, latest, and commit hash
+        run: |
+          IMAGE_NAME=ghcr.io/${{ github.repository }}:${{ env.VERSION }}
+          IMAGE_LATEST=ghcr.io/${{ github.repository }}:latest
+          IMAGE_COMMIT=ghcr.io/${{ github.repository }}:${{ github.sha }}
+          docker tag pac-app $IMAGE_NAME
+          docker tag pac-app $IMAGE_LATEST
+          docker tag pac-app $IMAGE_COMMIT
+
+      - name: Log in to GitHub Container Registry
+        run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Push Docker image to GitHub Container Registry
+        if: steps.release.outputs.released == 'true'
+        run: |
+          docker push ghcr.io/${{ github.repository }}:${{ env.VERSION }}
+          docker push ghcr.io/${{ github.repository }}:latest
+          docker push ghcr.io/${{ github.repository }}:${{ github.sha }}
+
+      - name: Publish | Upload to GitHub Release Assets
+        uses: python-semantic-release/publish-action@v9.8.9
+        if: steps.release.outputs.released == 'true'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ steps.release.outputs.tag }}
