@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pac"
-version = "0.1.0"
+version = "0.0.0"
 description = "A CLI app built with Poetry"
 authors = ["enea-scaccabarozzi <me@eneascaccabarozzi.xyz>"]
 readme = "README.md"
