@@ -31,7 +31,7 @@ jobs:
           path: ./.venv
           key: venv-${{ hashFiles('poetry.lock') }}
           restore-keys: |
-            venv-
+            codecov-venv-
 
       - name: Install Graphviz (dot)
         run: sudo apt-get install -y graphviz

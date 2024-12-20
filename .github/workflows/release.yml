@@ -13,6 +13,7 @@ jobs:
     permissions:
       id-token: write
       contents: write
+      packages: write
 
     steps:
       # Checkout the repository at the workflow sha in case the branch was updated
@@ -40,7 +41,7 @@ jobs:
           path: ./.venv
           key: venv-${{ hashFiles('poetry.lock') }}
           restore-keys: |
-            venv-
+            release-venv-
 
       - name: Install Graphviz (dot)
         run: sudo apt-get install -y graphviz
