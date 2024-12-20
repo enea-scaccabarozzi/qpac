@@ -33,6 +33,9 @@ jobs:
           restore-keys: |
             venv-
 
+      - name: Install Graphviz (dot)
+        run: sudo apt-get install -y graphviz
+
       - name: Run make install
         run: make install
 
