@@ -7,7 +7,7 @@ MARKDOWN_DIR := docs
 DOCS_DIR := dist/docs
 
 # Docker-related variables
-DOCKER_IMAGE := pac-app:latest
+DOCKER_IMAGE := pac-app
 
 # File Lists
 MARKDOWN_FILES := $(shell find $(MARKDOWN_DIR) -type f -name '*.md')

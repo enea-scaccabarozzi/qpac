@@ -50,3 +50,9 @@ jobs:
 
       - name: Run make test
         run: make test
+
+      - name: Run make build
+        run: make build
+
+      - name: Run make docker-build
+        run: make docker-build
